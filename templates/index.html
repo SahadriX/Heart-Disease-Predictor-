@@ -2,20 +2,216 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Heart Disease Predictor</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Heart Health Predictor</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #e6f2ff;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-image: url('https://img.freepik.com/free-vector/abstract-medical-wave-background_53876-95827.jpg');
+            background-size: cover;
+            background-blend-mode: overlay;
+        }
+
+        .container {
+            background-color: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 100, 0.1);
+            width: 400px;
+            padding: 30px;
+            text-align: center;
+        }
+
+        h2 {
+            color: #2c3e50;
+            margin-bottom: 25px;
+            font-weight: 600;
+            position: relative;
+            padding-bottom: 10px;
+        }
+
+        h2::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 3px;
+            background: #3498db;
+            border-radius: 3px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+            text-align: left;
+            position: relative;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #2c3e50;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border 0.3s;
+            box-sizing: border-box;
+        }
+
+        input:focus {
+            border-color: #3498db;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+        }
+
+        button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 500;
+            transition: background-color 0.3s, transform 0.2s;
+            margin-top: 10px;
+            width: 100%;
+        }
+
+        button:hover {
+            background-color: #2980b9;
+            transform: translateY(-2px);
+        }
+
+        .result {
+            margin-top: 25px;
+            padding: 15px;
+            border-radius: 8px;
+            font-weight: 500;
+            color: white;
+            background-color: #2ecc71;
+            display: none;
+        }
+
+        .result.error {
+            background-color: #e74c3c;
+        }
+
+        .heart-icon {
+            color: #e74c3c;
+            font-size: 24px;
+            margin-right: 8px;
+            vertical-align: middle;
+        }
+
+        .tooltip {
+            position: relative;
+            display: inline-block;
+        }
+
+        .tooltip .tooltiptext {
+            visibility: hidden;
+            width: 200px;
+            background-color: #555;
+            color: #fff;
+            text-align: center;
+            border-radius: 6px;
+            padding: 10px;
+            position: absolute;
+            z-index: 1;
+            bottom: 125%;
+            left: 50%;
+            margin-left: -100px;
+            opacity: 0;
+            transition: opacity 0.3s;
+            font-size: 14px;
+            font-weight: normal;
+        }
+
+        .tooltip .tooltiptext::after {
+            content: "";
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            margin-left: -5px;
+            border-width: 5px;
+            border-style: solid;
+            border-color: #555 transparent transparent transparent;
+        }
+
+        .tooltip:hover .tooltiptext {
+            visibility: visible;
+            opacity: 1;
+        }
+    </style>
 </head>
 <body>
-    <h2>Heart Disease Prediction</h2>
-    <form method="POST">
-        Age: <input type="number" name="age" required><br>
-        Sex (0 = female, 1 = male): <input type="number" name="sex" required><br>
-        CP (0-3): <input type="number" name="cp" required><br>
-        Resting BP: <input type="number" name="trestbps" required><br>
-        Cholesterol: <input type="number" name="chol" required><br>
-        <button type="submit">Predict</button>
-    </form>
-    {% if prediction %}
-        <h3>{{ prediction }}</h3>
-    {% endif %}
+    <div class="container">
+        <h2>
+            <span class="heart-icon">❤</span>
+            Heart Disease Predictor
+        </h2>
+        
+        <form method="POST">
+            <div class="form-group">
+                <label for="age"><b>Age</b></label>
+                <input type="number" id="age" name="age" placeholder="Enter your age" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="sex"><b>Gender</b></label>
+                <input type="number" id="sex" name="sex" placeholder="0 = female, 1 = male" min="0" max="1" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="cp"><b>Chest Pain Type</b></label>
+                <div class="tooltip">
+                    <input type="number" id="cp" name="cp" placeholder="Enter chest pain type (0-3)" min="0" max="3" required>
+                    <span class="tooltiptext">
+                        <b>Chest Pain Types:</b><br>
+                        0: Typical angina<br>
+                        1: Atypical angina<br>
+                        2: Non-anginal pain<br>
+                        3: Asymptomatic
+                    </span>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="trestbps"><b>Resting Blood Pressure</b></label>
+                <input type="number" id="trestbps" name="trestbps" placeholder="Enter resting BP (mm Hg)" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="chol"><b>Cholesterol Level</b></label>
+                <input type="number" id="chol" name="chol" placeholder="Enter serum cholesterol (mg/dl)" required>
+            </div>
+            
+            <button type="submit">Predict Heart Health</button>
+        </form>
+        
+        {% if prediction %}
+            <div class="result {% if 'likely' in prediction %}error{% endif %}">
+                {{ prediction }}
+            </div>
+            <script>
+                document.querySelector('.result').style.display = 'block';
+            </script>
+        {% endif %}
+    </div>
 </body>
 </html>
